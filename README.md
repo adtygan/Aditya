@@ -78,7 +78,7 @@ source .venv/bin/activate
 source ./setvars.sh 
 
 # Install newest stable torch for CUDA 11.x
-pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+pip3 install torch torchvision
 
 # Install the package using Metal (MPS) for mac (required for llama-cpp-python
 CMAKE_ARGS="-DLLAMA_METAL=on" pip install .
