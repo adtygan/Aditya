@@ -48,7 +48,7 @@ To repurpose `llm-search` into a chatbot, the following modifications were made
 
 ## Demo
 
-<img width="1512" alt="image" src="https://github.com/adtygan/Aditya/assets/51450254/2ad6ec2c-ef7c-4cdf-9425-6f9e296c5461">
+<img width="1512" alt="Chatbot Demo" src="https://github.com/adtygan/Aditya/assets/51450254/2ad6ec2c-ef7c-4cdf-9425-6f9e296c5461">
 
 
 ## Prerequisites
@@ -100,9 +100,9 @@ source .venv/bin/activate
 ./install_linux.sh
 ```
 
-# Quickstart
+## Quickstart
 
-## 1) Generate document embeddings
+### 1) Generate document embeddings
 
 ```bash
 llmsearch index create -c src/llmsearch/config.yaml
@@ -114,7 +114,7 @@ The default vector database for dense is ChromaDB, and default embedding model i
 
 In addition to dense embeddings, sparse embedding will be generated in `src/llmsearch/embeddings/splade` using SPLADE algorithm. Both dense and sparse embeddings will be used for context search.
 
-## 2) Interact with the documents
+### 2) Interact with the documents
 
 First, add your OpenAI API key in `.env` file by replacing <<YOUR_API_KEY>>> with your key.
 
@@ -131,3 +131,15 @@ Based on the configuration YAML files provided, the following actions will take 
 - Based on the model config, GPT-3.5 Turbo will be accessed and model-specific parameters mentioned in `model_kwargs` from the `llm->params` section will be passed to the model.
 - The system will query the embeddings database using hybrid search algorithm using sparse and dense embeddings. It will provide the most relevant context from different documents, up to a maximum context size of 4096 characters (`max_char_size` in `semantic_search`).
 - It will then use this context to answer the user query.
+
+## Limitations and Future Work
+
+- The chatbot at the moment does not leverage chat history. Since it was repurposed from an RAG use-case, it only takes the current user message as input.
+- Chain-of-Thought prompting can help the chatbot better decide when to use knowledge base and when to use common-sense knowledge. But this has not been incorporated.
+
+
+## My GPT Chatbot version 
+
+> 📌 Please note that another version of this chatbot has also been developed using My GPTs feature from ChatGPT. It is live and can be accessed at [https://chat.openai.com/g/g-6QVnD79XG-aditya](https://chat.openai.com/g/g-6QVnD79XG-aditya), but requires a ChatGPT Plus subscription to interact with. This version generally has better performance than the one in this repository. Below is a screenshot of its config and a demo chat.
+
+<img width="1510" alt="My GPT config and demo chat" src="https://github.com/adtygan/Aditya/assets/51450254/ca1318e3-7291-4116-8c69-2be6416b6e9f">
