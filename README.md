@@ -118,9 +118,7 @@ In addition to dense embeddings, sparse embedding will be generated in `src/llms
 
 First, add your OpenAI API key in `.env` file by replacing <<YOUR_API_KEY>>> with your key.
 
-> 📌 Note
-> 
-> Please ensure OpenAI API key has been added to the `.env` file before proceeding
+> 📌 Please ensure OpenAI API key has been added to the `.env` file before proceeding
 
 To interact with the documents using web app interface, run the below command:
 
