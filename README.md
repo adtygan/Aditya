@@ -48,7 +48,8 @@ To repurpose `llm-search` into a chatbot, the following modifications were made
 
 ## Demo
 
-![Demo](media/llmsearch-demo-v2.gif)
+<img width="1512" alt="image" src="https://github.com/adtygan/Aditya/assets/51450254/2ad6ec2c-ef7c-4cdf-9425-6f9e296c5461">
+
 
 ## Prerequisites
 
@@ -101,86 +102,34 @@ source .venv/bin/activate
 
 # Quickstart
 
-## 1) Create a configuration file for document base
-
-
-To create a configuration file in YAML format, you can refer to the example template provided in `sample_templates/generic/config_template.yaml`.
-
-
-The sample configuration file specifies how to load one of the supported locally hosted models, downloaded from Huggingface - 
-https://huggingface.co/TheBloke/airoboros-l2-13B-gpt4-1.4.1-GGUF/resolve/main/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf
-
-As an alternative uncomment the llm section for OpenAI model.
-
-[Sample configuration template](sample_templates/generic/config_template.yaml)
-
-
-## 2) Create a configuration file for model
-
-To create a configuration file in YAML format, you can refer to the example templates provided in `sample_templates/llm`.
-
-The sample configuration file in [LLamacpp Model Template](sample_templates/llm/llamacpp.yaml)
-specifies how to load one of the supported locally hosted models via LLamaCPP, downloaded from Huggingface - 
-https://huggingface.co/TheBloke/airoboros-l2-13B-gpt4-1.4.1-GGUF/resolve/main/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf
-
-As an alternative to other templates provided, for example OpenAI or LiteLLM.
-
-
-
-## 3) Create document embeddings
-
-To create embeddings from documents, follow these steps:
-
-1. Open the command line interface.
-2. Run the following command: 
+## 1) Generate document embeddings
 
 ```bash
-llmsearch index create -c /path/to/config.yaml
+llmsearch index create -c src/llmsearch/config.yaml
 ```
 
-Based on the example configuration above, executing this command will scan a folder containing markdown and pdf files (`/path/to/docments`) excluding the files in `subfolder1` and `subfolder2` and generate a dense embeddings database in the `/path/to/embedding/folder` directory. Additionally, a local cache folder (`/path/to/cache/folder`) will be utilized to store embedding models, LLM models, and tokenizers.
+Using the configuration YAML file in `src/llmsearch/config.yaml`, this command will scan the PDF files contained in document path (`src/llmsearch/docs`) and generate a dense embeddings database in the `src/llmsearch/embeddings` directory. Additionally, a local cache folder (`src/llmsearch/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
 
+The default vector database for dense is ChromaDB, and default embedding model is `intfloat/e5-large-v2`, which is known for its high performance. You can find more information about this and other embedding models at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
 
-The default vector database for dense is ChromaDB, and default embedding model is `e5-large-v2` (unless specified otherwise using `embedding_model` section such as above), which is known for its high performance. You can find more information about this and other embedding models at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
+In addition to dense embeddings, sparse embedding will be generated in `src/llmsearch/embeddings/splade` using SPLADE algorithm. Both dense and sparse embeddings will be used for context search.
 
-In addition to dense embeddings, sparse embedding will be generated in `/path/to/embedding/folder/splade` using SPLADE algorithm. Both dense and sparse embeddings will be used for context search.
+## 2) Interact with the documents
 
-## 4) Update document embeddings
+First, add your OpenAI API key in `.env` file by replacing <<YOUR_API_KEY>>> with your key.
 
-When new files are added or existing documents are changed, follow these steps to update the embeddings:
+> 📌 Note
+> 
+> Please ensure OpenAI API key has been added to the `.env` file before proceeding
+
+To interact with the documents using web app interface, run the below command:
 
 ```bash
-llmsearch index update -c /path/to/config.yaml
+llmsearch interact webapp -c src/llmsearch -m src/llmsearch/openai.yaml
 ```
 
-Executing this command will detect changed or new files (based on MD5 hash) and will incrementally update only the changes, without the need to rescan the documents from scratch.
+Based on the configuration YAML files provided, the following actions will take place:
 
-## 5) Interact with the documents
-
-To interact with the documents using one of the supported LLMs, follow these steps:
-
-1. Open the command line interface.
-2. Run one of the following commands: 
-
-* Web interface:
-
-Scans the configs and allows to switch between them.
-
-```bash
-llmsearch interact webapp -c /path/to/config_folder -m sample_templates/llm/llamacpp.yaml
-```
-
-* CLI interface:
-
-```bash
-llmsearch interact llm -c ./sample_templates/obsidian_conf.yaml -m ./sample_templates/llm/llamacpp.yaml
-
-```
-
-Based on the example configuration provided in the sample configuration file, the following actions will take place:
-
-- The system will load a quantized GGUF model using the LlamaCpp framework. The model file is located at `/storage/llm/cache/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf`
-- Based on the model config, the model will be partially loaded into the GPU (30 layers) and partially into the CPU (remaining layers). The `n_gpu_layers` parameter can be adjusted according to the hardware limitations.
-- Additional LlamaCpp specific parameters specified in `model_kwargs` from the `llm->params` section will be passed to the model.
+- Based on the model config, GPT-3.5 Turbo will be accessed and model-specific parameters mentioned in `model_kwargs` from the `llm->params` section will be passed to the model.
 - The system will query the embeddings database using hybrid search algorithm using sparse and dense embeddings. It will provide the most relevant context from different documents, up to a maximum context size of 4096 characters (`max_char_size` in `semantic_search`).
-- When displaying paths to relevant documents, the system will replace the part of the path `/home/snexus/projects/knowledge-base` with `obsidian://open?vault=knowledge-base&file=`. This replacement is based on the settings `substring_search` and `substring_replace` in `semantic_search->replace_output_path`. 
+- It will then use this context to answer the user query.
