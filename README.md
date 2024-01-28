@@ -28,6 +28,21 @@ This repository aims to develop a chatbot application that can introduce me to o
 To repurpose `llm-search` into a chatbot, the following modifications were made
 
 * Prompt engineering `GPT-3.5 Turbo` for the specific task.
+    * **Prompt**:
+      ```
+      I want you to act as a person called Aditya. I will provide you with an individual looking to know about Aditya, and your task is to introduce Aditya and answer questions about Aditya. Always use first person to answer questions. Context information is provided below. Given only the context and not prior knowledge, provide concise answer to the question. If context does not provide enough details, answer it without hallucinating.
+        
+       ### Context:
+       ---------------------
+       {context}
+       ---------------------
+  
+       ### Question: {question}
+      ```
+    * The prompt addresses the requirement of LLM to act as Aditya, use first-person when interacting and utilize the fetched context to answer the question.
+    * In addition, a key requirement is that the chatbot should be able to answer questions for which knowledge is not present in the documents.
+        * The last sentence in the prompt handles this.
+        * Chain-of-Thought prompting can handle this better but has not been incorporated in the current implementation. 
 * Revamping the UI using [Steamlit Chat](https://github.com/AI-Yash/st-chat) to suit a chat-style interface.
 
 
@@ -37,33 +52,17 @@ To repurpose `llm-search` into a chatbot, the following modifications were made
 
 ## Prerequisites
 
-* Tested on Ubuntu 22.04.
-* Nvidia GPU is required for embeddings generation and usage of locally hosted models.
-* Python 3.10, including dev packages (`python3-dev` on Ubuntu)
-* Nvidia CUDA Toolkit (tested with v11.7) - https://developer.nvidia.com/cuda-toolkit
-* To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
-* For parsing `.epub` documents, Pandoc is required - https://pandoc.org/installing.html
+* Tested on Mac (M1 Pro), but should work on Linux and Windows as well (please follow respective installation procedures below which are based on `llm-search`)
+* Python 3.8+
+* OpenAI API key to interact with OpenAI models
+    * Personal cost for developing and testing the OpenAI model was ≈ $0.2 at the time of writing this
+    * Testing the chatbot would require a much lesser cost
 
 
-## Automatic virtualenv based installation on Linux
-
-```bash
-git clone https://github.com/snexus/llm-search.git
-cd llm-search
-
-# Create a new environment
-python3 -m venv .venv 
-
-# Activate new environment
-source .venv/bin/activate
-
-./install_linux.sh
-```
-
-## Manual virtualenv based installation
+## Manual virtualenv based installation (personally tested on Mac)
 
 ```bash
-git clone https://github.com/snexus/llm-search.git
+git clone https://github.com/adtygan/Aditya.git
 cd llm-search
 
 # Create a new environment
@@ -82,7 +81,22 @@ source ./setvars.sh
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
 # Install the package
-pip install . # or `pip install -e .` for development
+pip install .
+```
+
+## Automatic virtualenv based installation on Linux
+
+```bash
+git clone https://github.com/adtygan/Aditya.git
+cd llm-search
+
+# Create a new environment
+python3 -m venv .venv 
+
+# Activate new environment
+source .venv/bin/activate
+
+./install_linux.sh
 ```
 
 # Quickstart
@@ -170,11 +184,3 @@ Based on the example configuration provided in the sample configuration file, th
 - Additional LlamaCpp specific parameters specified in `model_kwargs` from the `llm->params` section will be passed to the model.
 - The system will query the embeddings database using hybrid search algorithm using sparse and dense embeddings. It will provide the most relevant context from different documents, up to a maximum context size of 4096 characters (`max_char_size` in `semantic_search`).
 - When displaying paths to relevant documents, the system will replace the part of the path `/home/snexus/projects/knowledge-base` with `obsidian://open?vault=knowledge-base&file=`. This replacement is based on the settings `substring_search` and `substring_replace` in `semantic_search->replace_output_path`. 
-
-## API (experimental)
-
-To launch an api, supply a path config file in the `FASTAPI_LLM_CONFIG` environment variable and launch `llmsearchapi` 
-
-```bash
-FASTAPI_LLM_CONFIG="/path/to/config.yaml" llmsearchapi
-```
