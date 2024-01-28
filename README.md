@@ -63,7 +63,7 @@ To repurpose `llm-search` into a chatbot, the following modifications were made
 
 ```bash
 git clone https://github.com/adtygan/Aditya.git
-cd llm-search
+cd Aditya
 
 # Create a new environment
 python3 -m venv .venv 
@@ -88,7 +88,7 @@ pip install .
 
 ```bash
 git clone https://github.com/adtygan/Aditya.git
-cd llm-search
+cd Aditya
 
 # Create a new environment
 python3 -m venv .venv 
