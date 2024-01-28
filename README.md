@@ -1,26 +1,17 @@
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/snexus/llm-search/blob/main/notebooks/llmsearch_google_colab_demo.ipynb)
+# Aditya
 
-# LLM Search
+This repository aims to develop a chatbot application that can introduce me to others and was developed as part of my technical assessment for SAP. It is repurposed from the excellent `llm-search` package by Denis Lapchev (https://github.com/snexus/llm-search). It is designed primarily to act as a question-answering system (using Retrieval-Augmented Generation) and leverages my CV and personal bio as the knowledge base. 
 
-The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to LLMs** - better document parsing, hybrid search, HyDE enabled search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+## Existing features of LLM-Search
 
-## Features
+* Better document parsing, hybrid search, HyDE enabled search, re-ranking and the ability to customize embeddings.
+   * General configurations can be viewed and modified in `src/llmsearch/config.yaml`.
+     
+* The package is also designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+   * LLM-specific configuration can be viewed and modified in `src/llmsearch/openai.yaml`.
+   * To switch to local LLMs like Llama cpp or HuggingFace models, please refer to the steps outlined in the `llm-search`'s [Quickstart](https://github.com/snexus/llm-search/tree/main?tab=readme-ov-file#quickstart)
 
-* Supported formats
-    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.
-    * `.pdf` - MuPDF-based parser.
-    * `.html`, `.epub` - supported through the `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
-    * `.docx` - custom parser, supports nested tables.
-
-* Supports multiple collection of documents, and filtering the results by a collection.
-
-* An ability to update the embeddings incrementally, without a need to re-index the entire document base.
-
-* Generates dense embeddings from a folder of documents and stores them in a vector database (ChromaDB).
-  * The following embedding models are supported:
-    * Huggingface embeddings.
-    * Sentence-transformers-based models, e.g., `multilingual-e5-base`.
-    * Instructor-based models, e.g., `instructor-large`.
+* Generates dense embeddings from documents and stores them in a vector database (ChromaDB) using Sentence-transformers' `intfloat/e5-large-v2` model.
 
 * Generates sparse embeddings using SPLADE (https://github.com/naver/splade) to enable hybrid search (sparse + dense).
 
@@ -28,25 +19,16 @@ The purpose of this package is to offer a convenient question-answering system w
     * Besides the originally `ms-marco-MiniLM` cross-encoder, more modern `bge-reranker` is supported.
 
 * Supports HyDE (Hypothetical Document Embeddings) - https://arxiv.org/pdf/2212.10496.pdf
-    * WARNING: Enabling HyDE (via config OR webapp) can significantly alter the quality of the results. Please make sure to read the paper before enabling.
-    * From my own experiments, enabling HyDE significantly boosts quality of the output on a topics where user can't formulate the quesiton using domain specific language of the topic - e.g. when learning new topics.
 
 * Support for multi-querying, inspired by `RAG Fusion` - https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1
-    * When multi-querying is turned on (either config or webapp), the original query will be replaced by 3 variants of the same query, allowing to bridge the gap in the terminology and "offer different angles or perspectives" according to the article.
+    * When multi-querying is turned on, the original query will be replaced by 3 variants of the same query, allowing to bridge the gap in the terminology and "offer different angles or perspectives" according to the article.
+ 
+## Components Developed for Chatbot
 
-* Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
-    * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
-    * HuggingFace models.
-    * Llama cpp supported models - for full list see https://github.com/ggerganov/llama.cpp#description
-    * AutoGPTQ models (temporarily disabled due to broken dependencies).
+To repurpose `llm-search` into a chatbot, the following modifications were made
 
-* Interoperability with LiteLLM + Ollama via OpenAI API, supporting hundreds of different models (see [Model configuration for LiteLLM](sample_templates/llm/litellm.yaml))
-
-* Other features
-    * Simple CLI and web interfaces.
-    * Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.
-    * Ability to save responses to an offline database for future analysis.
-    * Experimental API
+* Prompt engineering `GPT-3.5 Turbo` for the specific task.
+* Revamping the UI using [Steamlit Chat](https://github.com/AI-Yash/st-chat) to suit a chat-style interface.
 
 
 ## Demo
