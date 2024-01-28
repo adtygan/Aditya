@@ -7,6 +7,7 @@ from typing import List
 
 import langchain
 import streamlit as st
+from streamlit_chat import message
 import torch
 import yaml
 from dotenv import load_dotenv
@@ -23,7 +24,7 @@ from llmsearch.embeddings import (
     EmbeddingsHashNotExistError,
 )
 
-st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
+st.set_page_config(page_title="Aditya", page_icon=":robot:", layout="wide")
 
 load_dotenv()
 
@@ -205,7 +206,8 @@ def reload_model(doc_config_path: str, model_config_file: str):
     st.session_state["disable_load"] = False
 
 
-st.title(":sparkles: LLMSearch")
+st.title("Hello, I'm Aditya. Nice to meet you! :wave:")
+st.text('••/)_/)\n=(^.^)=\n () ( ")••')
 args = parse_cli_arguments()
 st.sidebar.subheader(":hammer_and_wrench: Configuration")
 
@@ -225,20 +227,12 @@ if "disable_load" not in st.session_state:
 
 if Path(args.cli_doc_config_path).is_dir():
     config_paths = get_config_paths(args.cli_doc_config_path)
-    doc_config_path = st.sidebar.selectbox(
-        label="Choose config", options=config_paths, index=0
-    )
+    doc_config_path = 'src/llmsearch/config.yaml'
     model_config_file = args.cli_model_config_path
     logger.debug(f"CONFIG FILE: {doc_config_path}")
 
-    # Every form must have a submit button.
-    load_button = st.sidebar.button(
-        "Load", on_click=reload_model, args=(doc_config_path, model_config_file), type="primary"
-    )
-
-    # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
-    if load_button:
-        st.session_state["disable_load"] = False
+if st.session_state["llm_bundle"] is None:
+    reload_model(doc_config_path, model_config_file)
 
 
 if st.session_state["llm_bundle"] is not None:
@@ -247,40 +241,24 @@ if st.session_state["llm_bundle"] is not None:
     doc_config_path = st.session_state["llm_config"]["doc_config_path"]
     model_config_file = st.session_state["llm_config"]["model_config_file"]
     config_file_name = doc_config_path if isinstance(doc_config_path, str) else doc_config_path.name
-    st.sidebar.subheader("Loaded Parameters:")
-    with st.sidebar.expander(config_file_name):
-        st.json(config.model_dump_json())
 
-    st.sidebar.write(f"**Model type:** {config.llm.type}")
+    st.sidebar.write(f"**Model type:** GPT-3.5-Turbo")
 
     st.sidebar.write(
-        f"**Document path**: {config.embeddings.document_settings[0].doc_path}"
-    )
-    st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
-    update_embeddings_button = st.sidebar.button(
-        "Update embeddings",
-        on_click=udpate_index,
-        args=(doc_config_path, model_config_file),
-        type="secondary",
+        f"**Prompt**: I want you to act as a person called Aditya. I will provide you with an individual looking to know about Aditya, and your task is to introduce Aditya and answer questions about Aditya. Always use first person to answer questions. Context information is provided below. Given only the context and not prior knowledge, provide concise answer to the question. If context does not provide enough details, answer it without hallucinating."
     )
     st.sidebar.write(
         f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
     )
     label_filter = ""
-    if config.embeddings.labels:
-        label_filter = st.sidebar.selectbox(
-            label="Filter by label", options=["-"] + config.embeddings.labels
-        )
-        if label_filter is None or label_filter == "-":
-            label_filter = ""
 
     text = st.chat_input("Enter text", disabled=False)
     is_hyde = st.sidebar.checkbox(
-        label="Use HyDE (cost: 2 api calls)",
+        label="Use HyDE (costs 2 API calls)",
         value=st.session_state["llm_bundle"].hyde_enabled,
     )
     is_multiquery = st.sidebar.checkbox(
-        label="Use MultiQuery (cost: 2 api calls)",
+        label="Use MultiQuery (costs 2 API calls)",
         value=st.session_state["llm_bundle"].multiquery_enabled,
     )
 
@@ -302,46 +280,12 @@ if st.session_state["llm_bundle"] is not None:
             {
                 "question": text,
                 "response": output.response,
-                "links": [
-                    f'<a href="{s.chunk_link}">{s.chunk_link}</a>'
-                    for s in output.semantic_search[::-1]
-                ],
-                "quality": f"{output.average_score:.2f}",
             }
         )
         for h_response in st.session_state["messages"]:
-            with st.expander(
-                label=f":question: **{h_response['question']}**", expanded=False
-            ):
-                st.markdown(f"##### {h_response['question']}")
-                st.write(h_response["response"])
-                st.markdown(
-                    f"\n---\n##### Serrch Quality Score: {h_response['quality']}"
-                )
-                st.markdown("##### Links")
-                for link in h_response["links"]:
-                    st.write("\t* " + link, unsafe_allow_html=True)
-
-        for source in output.semantic_search[::-1]:
-            source_path = source.metadata.pop("source")
-            score = source.metadata.get("score", None)
-            with st.expander(label=f":file_folder: {source_path}", expanded=True):
-                st.write(
-                    f'<a href="{source.chunk_link}">{source.chunk_link}</a>',
-                    unsafe_allow_html=True,
-                )
-                if score is not None:
-                    st.write(f"\nScore: {score}")
-
-                st.text(f"\n\n{source.chunk_text}")
-        if st.session_state["llm_bundle"].hyde_enabled:
-            with st.expander(label=":octagonal_sign: **HyDE Reponse**", expanded=False):
-                st.write(output.hyde_response)
-
-        with chat_message("assistant"):
-            st.write(f"**Search results quality score: {output.average_score:.2f}**\n")
-            st.write(output.response)  # Add user message to chat history
+            message(h_response["question"], is_user=True)
+            message(h_response["response"])
 
 
 else:
-    st.info("Choose a configuration template to start...")
+    st.info("Load the AI to start...")

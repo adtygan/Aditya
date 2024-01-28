@@ -73,11 +73,12 @@ class SparseEmbeddingsSplade:
         )
 
         # For smaller VRAM sizes, might be useful to free the memory.
+        '''
         if free_memory:
             del output
             del tokens
             torch.cuda.synchronize()
-
+        '''
         return vecs
 
     def _get_embedding_fnames(self):
