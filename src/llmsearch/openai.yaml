@@ -9,6 +9,11 @@ llm:
          {context}
          ---------------------
 
+         ### Chat Hisotry:
+          --------------------- 
+          {chat_history}
+          ---------------------
+
          ### Question: {question}
     model_kwargs:
       temperature: 0.0

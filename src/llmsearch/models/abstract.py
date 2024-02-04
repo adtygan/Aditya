@@ -17,6 +17,6 @@ class AbstractLLMModel(ABC):
     def prompt(self) -> Optional[PromptTemplate]:
         if self.prompt_template:
             return PromptTemplate(
-                input_variables=["context", "question"], template=self.prompt_template
+                input_variables=["context", "question", "chat_history"], template=self.prompt_template
             )
         return None

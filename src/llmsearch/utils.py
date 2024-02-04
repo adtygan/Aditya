@@ -15,6 +15,7 @@ from llmsearch.embeddings import VectorStore
 from llmsearch.database.config import DBSettings, get_local_session, Base
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 
 CHAIN_TYPE = "stuff"
 
@@ -65,7 +66,8 @@ def get_llm_bundle(config: Config) -> LLMBundle:
 
     set_cache_folder(str(config.cache_folder))
     llm = get_llm(config.llm.params)  # type: ignore
-    chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, prompt=llm.prompt)
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="question")
+    chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, memory=memory, prompt=llm.prompt)
 
     store = VectorStoreChroma(
         persist_folder=str(config.embeddings.embeddings_path), config=config
