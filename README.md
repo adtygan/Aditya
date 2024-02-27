@@ -1,6 +1,6 @@
 # Aditya
 
-This repository aims to develop a chatbot application that can introduce me to others and was developed as part of my technical assessment for SAP. It is repurposed from the excellent `llm-search` package by Denis Lapchev (https://github.com/snexus/llm-search). It is designed primarily to act as a question-answering system (using Retrieval-Augmented Generation) and leverages my CV and personal bio as the knowledge base. 
+This repository aims to develop a chatbot application that can introduce me to others. It is repurposed from the excellent `llm-search` package by Denis Lapchev (https://github.com/snexus/llm-search). It is designed primarily to act as a Retrieval-Augmented Generation Chatbot and leverages my CV and personal bio as the knowledge base. 
 
 ## Existing features of LLM-Search
 
