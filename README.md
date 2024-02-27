@@ -48,7 +48,9 @@ To repurpose `llm-search` into a chatbot, the following modifications were made
 
 ## Demo
 
-<img width="1512" alt="Chatbot Demo" src="https://github.com/adtygan/Aditya/assets/51450254/2ad6ec2c-ef7c-4cdf-9425-6f9e296c5461">
+<img width="1512" alt="RAG Chatbot Demo" src="https://github.com/adtygan/Aditya/assets/51450254/3ee33462-963c-414a-bc74-140a3f44bf52">
+
+
 
 
 ## Prerequisites
@@ -142,4 +144,5 @@ Based on the configuration YAML files provided, the following actions will take 
 
 > 📌 Please note that another version of this chatbot has also been developed using My GPTs feature from ChatGPT. It is live and can be accessed at [https://chat.openai.com/g/g-6QVnD79XG-aditya](https://chat.openai.com/g/g-6QVnD79XG-aditya), but requires a ChatGPT Plus subscription to interact with. This version generally has better performance than the one in this repository. Below is a screenshot of its config and a demo chat.
 
-<img width="1510" alt="My GPT config and demo chat" src="https://github.com/adtygan/Aditya/assets/51450254/ca1318e3-7291-4116-8c69-2be6416b6e9f">
+<img width="1510" alt="My GPT config and demo chat" src="https://github.com/adtygan/Aditya/assets/51450254/1e1eb998-177d-4717-b960-47b2cb627fa5">
+
